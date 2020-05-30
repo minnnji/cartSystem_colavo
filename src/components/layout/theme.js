@@ -1,0 +1,15 @@
+const theme = {
+  COLOR_BG: '#f8f8f8',
+  COLOR_GRAY_1: '#DBDBDB',
+  COLOR_GRAY_2: '#C2C7D0',
+  COLOR_GRAY_3: '#7d7e80',
+  COLOR_PURPLE_1: '#F9F4FF',
+  COLOR_PURPLE_2: '#D8CEF7',
+  COLOR_PURPLE_3: '#A692EE',
+  COLOR_PURPLE_4: '#9A86ED',
+  COLOR_PINK_1: '#FFE6F4',
+  COLOR_PINK_2: '#FB85B5',
+  COLOR_GRREN_1: '#65E8AA'
+};
+
+export default theme;
