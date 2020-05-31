@@ -10,6 +10,7 @@ interface DiscountContainerProps {
 const ItemContainer = (props: DiscountContainerProps) => {
   const { history } = props;
   const [item, setItem] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleBack = () => {
     history.goBack();
@@ -17,14 +18,16 @@ const ItemContainer = (props: DiscountContainerProps) => {
 
   useEffect(() => {
     const getItem = async () => {
+      setIsLoading(true);
       const data = await requestItem();
       setItem(data);
+      setIsLoading(false);
     };
 
     getItem();
   }, []);
 
-  return <ItemList item={item} handleBack={handleBack} />;
+  return <ItemList isLoading={isLoading} item={item} handleBack={handleBack} />;
 };
 
 export default ItemContainer;
