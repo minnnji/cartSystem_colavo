@@ -87,7 +87,7 @@ const Name = styled.dt`
 const Price = styled.dd`
   font-weight: 200;
   font-size: 16px;
-  color: ${theme.COLOR_PINK_2};
+  color: ${theme.COLOR_GRREN_1};
 `;
 
 export default ItemList;

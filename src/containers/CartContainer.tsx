@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { cartItemState } from '../store/atoms';
+import { cartItemState, cartDiscountState } from '../store/atoms';
 import Cart from '../components/Cart';
 
 interface CartContainerProps {
@@ -16,6 +16,9 @@ const CartContainer = (props: CartContainerProps) => {
   };
 
   const [seletedItemList, setSelectedItemList] = useRecoilState(cartItemState);
+  const [selectedDiscountList, setSelectedDiscountList] = useRecoilState(
+    cartDiscountState
+  );
 
   const handleItemCount = (key: string, count: number) => {
     const newItemList = seletedItemList.map(item => {
@@ -32,13 +35,22 @@ const CartContainer = (props: CartContainerProps) => {
     setSelectedItemList(newItemList);
   };
 
+  const removeDiscount = (key: string) => {
+    const newDiscountList = selectedDiscountList.filter(
+      discount => discount[0] !== key
+    );
+    setSelectedDiscountList(newDiscountList);
+  };
+
   return (
     <Cart
       history={history}
       schedule={schedule}
       itemList={seletedItemList}
+      discountList={selectedDiscountList}
       handleItemCount={handleItemCount}
       removeItem={removeItem}
+      removeDiscount={removeDiscount}
     />
   );
 };

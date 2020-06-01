@@ -22,20 +22,35 @@ interface CartProps {
       price: number;
     }
   ][];
+  discountList: [
+    string,
+    {
+      name: string;
+      rate: number;
+    }
+  ][];
   handleItemCount: (key: string, count: number) => void;
   removeItem: (key: string) => void;
+  removeDiscount: (key: string) => void;
 }
 
 const Cart = (props: CartProps) => {
-  const { history, schedule, itemList, handleItemCount, removeItem } = props;
+  const {
+    history,
+    schedule,
+    itemList,
+    discountList,
+    handleItemCount,
+    removeItem,
+    removeDiscount
+  } = props;
 
-  // cost, handleRemove 추가 예정
   const items = itemList.map(item => {
     return (
-      <Item key={item[0]}>
+      <Li key={item[0]}>
         <Info>
           <Title>{item[1].name}</Title>
-          <Price>{item[1].price.toLocaleString()}원</Price>
+          <Memo>{item[1].price.toLocaleString()}원</Memo>
           <InputNumber
             currentCount={item[1].count}
             max={10}
@@ -46,7 +61,22 @@ const Cart = (props: CartProps) => {
         <RemoveButton onClick={() => removeItem(item[0])}>
           <BsTrashFill />
         </RemoveButton>
-      </Item>
+      </Li>
+    );
+  });
+
+  const discounts = discountList.map(discount => {
+    return (
+      <Li key={discount[0]}>
+        <Info>
+          <Title>{discount[1].name}</Title>
+          <Memo>{Math.floor(discount[1].rate * 100)}% 할인</Memo>
+        </Info>
+        <Discount>- 1,000원</Discount>
+        <RemoveButton onClick={() => removeDiscount(discount[0])}>
+          <BsTrashFill />
+        </RemoveButton>
+      </Li>
     );
   });
 
@@ -61,10 +91,20 @@ const Cart = (props: CartProps) => {
           + 할인 추가
         </HalfButton>
       </ButtonWrap>
-      <CartWrap>
-        <SubTitle>시술</SubTitle>
-        <ul>{items.length ? items : <NoList text='시술을 추가해주세요.' />}</ul>
-      </CartWrap>
+      <section>
+        <Content>
+          <SubTitle>시술</SubTitle>
+          <ul>
+            {items.length ? items : <NoList text='시술을 추가해주세요.' />}
+          </ul>
+        </Content>
+        {discounts.length > 0 && (
+          <Content>
+            <SubTitle>할인</SubTitle>
+            <ul>{discounts}</ul>
+          </Content>
+        )}
+      </section>
     </Wrap>
   );
 };
@@ -77,7 +117,9 @@ const ButtonWrap = styled.div`
   margin-bottom: 20px;
 `;
 
-const CartWrap = styled.section``;
+const Content = styled.div`
+  margin-bottom: 20px;
+`;
 
 const SubTitle = styled.h3`
   padding: 10px 0;
@@ -86,7 +128,7 @@ const SubTitle = styled.h3`
   border-bottom: 1px solid ${theme.COLOR_GRAY_2};
 `;
 
-const Item = styled.li`
+const Li = styled.li`
   display: flex;
   position: relative;
   align-items: center;
@@ -104,17 +146,22 @@ const Title = styled.dt`
   margin-bottom: 10px;
 `;
 
-const Price = styled.dd`
+const Memo = styled.dd`
   margin-bottom: 10px;
   font-weight: 200;
   font-size: 16px;
-  color: ${theme.COLOR_GRREN_1};
+  color: ${theme.COLOR_GRAY_3};
 `;
 
 const Cost = styled.div`
   position: absolute;
   right: 40px;
   font-size: 18px;
+  color: ${theme.COLOR_GRREN_1};
+`;
+
+const Discount = styled(Cost)`
+  color: ${theme.COLOR_PINK_2};
 `;
 
 const RemoveButton = styled.button.attrs({
