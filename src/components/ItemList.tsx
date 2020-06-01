@@ -14,7 +14,7 @@ interface DiscountListProps {
       price: number;
     }
   ][];
-  seletedItemList: object[];
+  selectedItemList: object[];
   handleSelectedItemList: (
     item: [
       string,
@@ -32,13 +32,13 @@ const ItemList = (props: DiscountListProps) => {
   const {
     isLoading,
     itemList,
-    seletedItemList,
+    selectedItemList,
     handleSelectedItemList,
     handleBack
   } = props;
 
   const isSelectedItem = (key: string) =>
-    seletedItemList.some(selectedItem => selectedItem[0] === key);
+    selectedItemList.some(selectedItem => selectedItem[0] === key);
 
   const items = itemList.map(item => {
     return (

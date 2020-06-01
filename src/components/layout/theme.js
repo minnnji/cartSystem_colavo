@@ -9,7 +9,7 @@ const theme = {
   COLOR_PURPLE_4: '#9A86ED',
   COLOR_PINK_1: '#FFE6F4',
   COLOR_PINK_2: '#FB85B5',
-  COLOR_GRREN_1: '#65E8AA'
+  COLOR_GRREN_1: '#4ed893'
 };
 
 export default theme;

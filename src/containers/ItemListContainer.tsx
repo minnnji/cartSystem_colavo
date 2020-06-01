@@ -13,7 +13,7 @@ const initialItemList = ['', { count: 0, name: '', price: 0 }];
 
 const ItemContainer = (props: DiscountContainerProps) => {
   const { history } = props;
-  const [seletedItemList, setSelectedItemList] = useRecoilState(cartItemState);
+  const [selectedItemList, setSelectedItemList] = useRecoilState(cartItemState);
 
   const [itemList, setItemList] = useState([initialItemList]);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,8 +48,8 @@ const ItemContainer = (props: DiscountContainerProps) => {
       }
     ]
   ) => {
-    const index = seletedItemList.map(item => item[0]).indexOf(item[0]);
-    const newItemList = [...seletedItemList];
+    const index = selectedItemList.map(item => item[0]).indexOf(item[0]);
+    const newItemList = [...selectedItemList];
 
     index === -1 ? newItemList.push(item) : newItemList.splice(index, 1);
     setSelectedItemList(newItemList);
@@ -59,7 +59,7 @@ const ItemContainer = (props: DiscountContainerProps) => {
     <ItemList
       isLoading={isLoading}
       itemList={itemList}
-      seletedItemList={seletedItemList}
+      selectedItemList={selectedItemList}
       handleSelectedItemList={handleSelectedItemList}
       handleBack={handleBack}
     />
