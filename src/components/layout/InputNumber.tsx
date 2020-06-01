@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+interface InputNumberProps {
+  currentCount: number;
+  max: number;
+  handleCount: (key: string, count: number) => void;
+}
+
 const InputNumber = props => {
-  const { handleCount, max } = props;
-  const [count, setCount] = useState(0);
+  const { currentCount, max, handleCount } = props;
+  const [count, setCount] = useState(currentCount);
 
   const handleMinus = value => {
     if (value > 1) {

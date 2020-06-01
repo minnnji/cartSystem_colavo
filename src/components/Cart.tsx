@@ -22,22 +22,28 @@ interface CartProps {
       price: number;
     }
   ][];
+  handleItemCount: (key: string, count: number) => void;
+  removeItem: (key: string) => void;
 }
 
 const Cart = (props: CartProps) => {
-  const { history, schedule, itemList } = props;
+  const { history, schedule, itemList, handleItemCount, removeItem } = props;
 
   // cost, handleRemove 추가 예정
   const items = itemList.map(item => {
     return (
-      <Item>
+      <Item key={item[0]}>
         <Info>
           <Title>{item[1].name}</Title>
           <Price>{item[1].price.toLocaleString()}원</Price>
-          <InputNumber />
+          <InputNumber
+            currentCount={item[1].count}
+            max={10}
+            handleCount={count => handleItemCount(item[0], count)}
+          />
         </Info>
-        <Cost>가격 * 수량</Cost>
-        <RemoveButton onClick={() => alert('handleRemove')}>
+        <Cost>{(item[1].price * item[1].count).toLocaleString()}원</Cost>
+        <RemoveButton onClick={() => removeItem(item[0])}>
           <BsTrashFill />
         </RemoveButton>
       </Item>
@@ -107,7 +113,7 @@ const Price = styled.dd`
 
 const Cost = styled.div`
   position: absolute;
-  right: 30px;
+  right: 40px;
   font-size: 18px;
 `;
 
