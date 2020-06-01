@@ -1,29 +1,56 @@
 import React from 'react';
 import Header from './layout/Header';
 import CheckBox from './layout/Checkbox.js';
-import InputNumber from './layout/InputNumber';
 import styled from 'styled-components';
 import theme from './layout/theme';
 
 interface DiscountListProps {
   isLoading: boolean;
-  item: object;
+  itemList: [
+    string,
+    {
+      count: number;
+      name: string;
+      price: number;
+    }
+  ][];
+  seletedItemList: object[];
+  handleSelectedItemList: (
+    item: [
+      string,
+      {
+        count: number;
+        name: string;
+        price: number;
+      }
+    ]
+  ) => void;
   handleBack: () => void;
 }
 
 const ItemList = (props: DiscountListProps) => {
-  const { isLoading, item, handleBack } = props;
-  const itemArray = Object.values(item);
+  const {
+    isLoading,
+    itemList,
+    seletedItemList,
+    handleSelectedItemList,
+    handleBack
+  } = props;
 
-  const items = itemArray.map(item => {
+  const isSelectedItem = (key: string) =>
+    seletedItemList.some(selectedItem => selectedItem[0] === key);
+
+  const items = itemList.map(item => {
     return (
-      <Li>
-        <CheckBox />
-        <Info>
-          <Name>{item.name}</Name>
-          <Price>{item.price.toLocaleString()}원</Price>
+      <Li key={item[0]}>
+        <CheckBox
+          checked={isSelectedItem(item[0])}
+          onChange={() => handleSelectedItemList(item)}
+        />
+        <Info onclick={() => handleSelectedItemList(item)}>
+          <Name>{item[1].name}</Name>
+          <Price>{item[1].price.toLocaleString()}원</Price>
         </Info>
-        <InputNumber />
       </Li>
     );
   });
@@ -50,7 +77,6 @@ const Li = styled.li`
 const Info = styled.dl`
   display: inline-block;
   margin-right: 10px;
-  width: 65%;
   font-size: 18px;
 `;
 
