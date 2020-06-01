@@ -23,15 +23,13 @@ const InputNumber = props => {
 
   return (
     <div>
-      <span>
-        <Button type='button' onClick={() => handleMinus(count)}>
-          -
-        </Button>
-        <Number readOnly type='number' value={count} min='0' />
-        <Button type='button' onClick={() => handlePlus(count, max)}>
-          +
-        </Button>
-      </span>
+      <Button type='button' onClick={() => handleMinus(count)}>
+        -
+      </Button>
+      <Number readOnly type='number' value={count} min='0' />
+      <Button type='button' onClick={() => handlePlus(count, max)}>
+        +
+      </Button>
     </div>
   );
 };

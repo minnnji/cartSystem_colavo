@@ -1,5 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { cartItemState } from '../store/atoms';
 import Cart from '../components/Cart';
 
 interface CartContainerProps {
@@ -13,7 +15,11 @@ const CartContainer = (props: CartContainerProps) => {
     date: '2020. 6. 2. 오후 6:00'
   };
 
-  return <Cart history={history} schedule={schedule} />;
+  const [seletedItemList, setSelectedItemList] = useRecoilState(cartItemState);
+
+  return (
+    <Cart history={history} schedule={schedule} itemList={seletedItemList} />
+  );
 };
 
 export default CartContainer;
