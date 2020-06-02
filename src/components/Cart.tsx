@@ -123,7 +123,7 @@ const Cart = (props: CartProps) => {
         )}
         <CostWrap>
           <div>총 결제금액</div>
-          <TotalCost>{totalCost}</TotalCost>
+          <TotalCost>{totalCost.toLocaleString()}원</TotalCost>
         </CostWrap>
         <Button purple>다음</Button>
       </section>
