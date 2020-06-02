@@ -65,10 +65,20 @@ const DiscountContainer = (props: DiscountContainerProps) => {
       }
     ][]
   ) => {
+    const itemCostList = targetItem.map(item => item[1].price * item[1].count);
+    const totalCostForDiscount = itemCostList.reduce((acc, cur) => acc + cur);
+
     const newList = selectedDiscountList.map(discount => {
       const info = discount[1];
       return discount[0] === discountKey
-        ? [discountKey, { ...info, targetItem }]
+        ? [
+            discountKey,
+            {
+              ...info,
+              targetItem,
+              discountCost: totalCostForDiscount * discount[1].rate
+            }
+          ]
         : discount;
     });
     setSelectedDiscountList(newList);

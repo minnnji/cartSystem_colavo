@@ -27,6 +27,15 @@ interface CartProps {
     {
       name: string;
       rate: number;
+      discountCost: number;
+      targetItem: [
+        string,
+        {
+          count: number;
+          name: string;
+          price: number;
+        }
+      ][];
     }
   ][];
   handleItemCount: (key: string, count: number) => void;
@@ -65,14 +74,20 @@ const Cart = (props: CartProps) => {
     );
   });
 
+  const targetItems = targetList =>
+    targetList.map(item => <Target key={item[0]}>{item[1].name}</Target>);
+
   const discounts = discountList.map(discount => {
     return (
       <Li key={discount[0]}>
         <Info>
           <Title>{discount[1].name}</Title>
           <Memo>{Math.floor(discount[1].rate * 100)}% 할인</Memo>
+          {discount[1].targetItem && (
+            <Memo>{targetItems(discount[1].targetItem)}</Memo>
+          )}
         </Info>
-        <Discount>- 1,000원</Discount>
+        <Discount>- {Math.floor(discount[1].discountCost)}원</Discount>
         <RemoveButton onClick={() => removeDiscount(discount[0])}>
           <BsTrashFill />
         </RemoveButton>
@@ -151,6 +166,10 @@ const Memo = styled.dd`
   font-weight: 200;
   font-size: 16px;
   color: ${theme.COLOR_GRAY_3};
+`;
+
+const Target = styled.span`
+  margin-right: 5px;
 `;
 
 const Cost = styled.div`
