@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { cartItemState, cartDiscountState } from '../store/atoms';
+import { requestCurrencyCode } from '../api';
 import Cart from '../components/Cart';
 
 interface CartContainerProps {
@@ -21,6 +22,15 @@ const CartContainer = (props: CartContainerProps) => {
   );
 
   const [totalCost, setTotalCost] = useState(0);
+  const [currencyCode, setCurrencyCode] = useState('');
+
+  useEffect(() => {
+    const getCurrencyCode = async () => {
+      const code = await requestCurrencyCode();
+      setCurrencyCode(code);
+    };
+    getCurrencyCode();
+  }, []);
 
   useEffect(() => {
     const handleTotalCost = () => {
@@ -70,6 +80,7 @@ const CartContainer = (props: CartContainerProps) => {
     <Cart
       history={history}
       schedule={schedule}
+      currencyCode={currencyCode}
       itemList={seletedItemList}
       discountList={selectedDiscountList}
       totalCost={totalCost}

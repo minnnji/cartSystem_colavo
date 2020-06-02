@@ -1,5 +1,6 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import CheckBox from './layout/Checkbox.js';
+import { Button } from './layout/Button';
 import styled from 'styled-components';
 import theme from './layout/theme';
 
@@ -63,6 +64,10 @@ const DiscountTarget = (props: DiscountTargetProps) => {
     index === -1 ? targetList.push(item) : targetList.splice(index, 1);
   };
 
+  useEffect(() => {
+    itemList.forEach(item => makeTargetList(item));
+  }, []);
+
   // TO DO.
   // const isSelectedItem = (currentKey: string) => {
   //   return discount[1].targetItem
@@ -98,7 +103,8 @@ const DiscountTarget = (props: DiscountTargetProps) => {
             `[${discount[1].name}] 적용대상을 선택해주세요.`,
             <>
               {items}
-              <button
+              <Button
+                purple
                 type='button'
                 onClick={() => {
                   handleTargetItem(discount[0], targetList);
@@ -106,12 +112,12 @@ const DiscountTarget = (props: DiscountTargetProps) => {
                 }}
               >
                 확인
-              </button>
+              </Button>
             </>
           )
         }
       >
-        전체 시술 적용 >
+        할인 적용 대상을 선택해주세요 >
       </Target>
     </>
   );

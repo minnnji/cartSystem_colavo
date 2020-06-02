@@ -14,6 +14,7 @@ interface CartProps {
     name: string;
     date: string;
   };
+  currencyCode: string;
   itemList: [
     string,
     {
@@ -48,6 +49,7 @@ const Cart = (props: CartProps) => {
   const {
     history,
     schedule,
+    currencyCode,
     itemList,
     discountList,
     totalCost,
@@ -123,7 +125,10 @@ const Cart = (props: CartProps) => {
         )}
         <CostWrap>
           <div>총 결제금액</div>
-          <TotalCost>{totalCost.toLocaleString()}원</TotalCost>
+          {currencyCode === 'KRW' && (
+            <TotalCost>{totalCost.toLocaleString()}원</TotalCost>
+          )}
+          {currencyCode === 'USD' && <TotalCost>${totalCost / 1200}</TotalCost>}
         </CostWrap>
         <Button purple>다음</Button>
       </section>
