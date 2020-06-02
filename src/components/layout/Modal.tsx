@@ -56,12 +56,11 @@ const TopWrap = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  height: 40px;
+  margin: 10px 0;
+  min-height: 40px;
 `;
 
 const Title = styled.h1`
-  text-align: center;
   font-size: 18px;
   font-weight: 600;
 `;

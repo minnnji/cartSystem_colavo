@@ -1,7 +1,7 @@
 import React, { ReactElement, useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { useRecoilState, useResetRecoilState } from 'recoil';
-import { cartDiscountState, currentModal } from '../store/atoms';
+import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
+import { cartItemState, cartDiscountState, currentModal } from '../store/atoms';
 import DiscountList from '../components/DiscountList';
 import Modal from '../components/layout/Modal';
 import { requestDiscounts } from '../api';
@@ -16,6 +16,7 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     cartDiscountState
   );
   const [modalState, setModalState] = useRecoilState(currentModal);
+  const itemList = useRecoilValue(cartItemState);
   const closeModal = useResetRecoilState(currentModal);
 
   const [discount, setDiscount] = useState([]);
@@ -53,6 +54,26 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     setSelectedDiscountList(newItemList);
   };
 
+  const handleTargetItem = (
+    discountKey: string,
+    targetItem: [
+      string,
+      {
+        count: number;
+        name: string;
+        price: number;
+      }
+    ][]
+  ) => {
+    const newList = selectedDiscountList.map(discount => {
+      const info = discount[1];
+      return discount[0] === discountKey
+        ? [discountKey, { ...info, targetItem }]
+        : discount;
+    });
+    setSelectedDiscountList(newList);
+  };
+
   const handleBack = () => {
     history.goBack();
   };
@@ -67,9 +88,12 @@ const DiscountContainer = (props: DiscountContainerProps) => {
       <DiscountList
         isLoading={isLoading}
         discountList={discount}
+        itemList={itemList}
         selectedDiscountList={selectedDiscountList}
         handleSelectedDiscountList={handleSelectedDiscountList}
+        handleTargetItem={handleTargetItem}
         handleModalOpen={handleModalOpen}
+        handleModalClose={closeModal}
         handleBack={handleBack}
       />
       <Modal

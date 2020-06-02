@@ -3,6 +3,7 @@ import Header from './layout/Header';
 import CheckBox from './layout/Checkbox.js';
 import styled from 'styled-components';
 import theme from './layout/theme';
+import DiscountTarget from './DiscountTarget';
 
 interface DiscountListProps {
   isLoading: boolean;
@@ -11,6 +12,14 @@ interface DiscountListProps {
     {
       name: string;
       rate: number;
+    }
+  ][];
+  itemList: [
+    string,
+    {
+      count: number;
+      name: string;
+      price: number;
     }
   ][];
   selectedDiscountList: object[];
@@ -23,18 +32,33 @@ interface DiscountListProps {
       }
     ]
   ) => void;
+  handleTargetItem: (
+    discountKey: string,
+    targetItem: [
+      string,
+      {
+        count: number;
+        name: string;
+        price: number;
+      }
+    ][]
+  ) => void;
   handleModalOpen: (title: string, children: ReactElement) => void;
   handleBack: () => void;
+  handleModalClose: () => void;
 }
 
 const DiscountList = (props: DiscountListProps) => {
   const {
     isLoading,
     discountList,
+    itemList,
     selectedDiscountList,
     handleSelectedDiscountList,
+    handleTargetItem,
     handleModalOpen,
-    handleBack
+    handleBack,
+    handleModalClose
   } = props;
 
   const isSelectedDiscount = (key: string) =>
@@ -52,16 +76,14 @@ const DiscountList = (props: DiscountListProps) => {
           <Name>{item[1].name}</Name>
           <Discount>{Math.floor(item[1].rate * 100)}% 할인</Discount>
           {isChecked && (
-            <Target
-              onClick={() =>
-                handleModalOpen(
-                  '할인 적용대상을 선택해주세요.',
-                  <div>시술리스트 노출예정</div>
-                )
-              }
-            >
-              전체 시술 적용 >
-            </Target>
+            <DiscountTarget
+              discount={item}
+              discountList={discountList}
+              itemList={itemList}
+              handleTargetItem={handleTargetItem}
+              handleModalOpen={handleModalOpen}
+              handleModalClose={handleModalClose}
+            />
           )}
         </Info>
       </Li>
@@ -105,10 +127,6 @@ const Discount = styled.dd`
   font-weight: 200;
   font-size: 16px;
   color: ${theme.COLOR_PINK_2};
-`;
-
-const Target = styled(Discount)`
-  text-decoration: underline;
 `;
 
 export default DiscountList;
