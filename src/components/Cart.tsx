@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import CartHeader from './layout/CartHeader';
-import { HalfButton } from './layout/Button';
+import { Button, HalfButton } from './layout/Button';
 import InputNumber from './layout/InputNumber';
 import NoList from './layout/NoList';
 import theme from './layout/theme';
@@ -38,6 +38,7 @@ interface CartProps {
       ][];
     }
   ][];
+  totalCost: number;
   handleItemCount: (key: string, count: number) => void;
   removeItem: (key: string) => void;
   removeDiscount: (key: string) => void;
@@ -49,6 +50,7 @@ const Cart = (props: CartProps) => {
     schedule,
     itemList,
     discountList,
+    totalCost,
     handleItemCount,
     removeItem,
     removeDiscount
@@ -119,6 +121,11 @@ const Cart = (props: CartProps) => {
             <ul>{discounts}</ul>
           </Content>
         )}
+        <CostWrap>
+          <div>총 결제금액</div>
+          <TotalCost>{totalCost}</TotalCost>
+        </CostWrap>
+        <Button purple>다음</Button>
       </section>
     </Wrap>
   );
@@ -188,6 +195,16 @@ const RemoveButton = styled.button.attrs({
 })`
   position: absolute;
   right: 0px;
+`;
+
+const CostWrap = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+`;
+
+const TotalCost = styled.div`
+  font-size: 24px;
 `;
 
 export default Cart;

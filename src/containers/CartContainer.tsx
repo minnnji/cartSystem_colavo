@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { cartItemState, cartDiscountState } from '../store/atoms';
@@ -19,6 +19,30 @@ const CartContainer = (props: CartContainerProps) => {
   const [selectedDiscountList, setSelectedDiscountList] = useRecoilState(
     cartDiscountState
   );
+
+  const [totalCost, setTotalCost] = useState(0);
+
+  useEffect(() => {
+    const handleTotalCost = () => {
+      let totalPrice,
+        totalDiscountCost = 0;
+      if (seletedItemList.length) {
+        const costList = seletedItemList.map(
+          item => item[1].price * item[1].count
+        );
+        totalPrice = costList.reduce((acc, cur) => acc + cur);
+
+        if (selectedDiscountList.length) {
+          const discountCostList = selectedDiscountList.map(
+            discount => discount[1].discountCost
+          );
+          totalDiscountCost = discountCostList.reduce((acc, cur) => acc + cur);
+        }
+        setTotalCost(totalPrice - totalDiscountCost);
+      }
+    };
+    handleTotalCost();
+  });
 
   const handleItemCount = (key: string, count: number) => {
     const newItemList = seletedItemList.map(item => {
@@ -48,6 +72,7 @@ const CartContainer = (props: CartContainerProps) => {
       schedule={schedule}
       itemList={seletedItemList}
       discountList={selectedDiscountList}
+      totalCost={totalCost}
       handleItemCount={handleItemCount}
       removeItem={removeItem}
       removeDiscount={removeDiscount}
