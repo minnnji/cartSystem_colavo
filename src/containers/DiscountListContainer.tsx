@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { cartDiscountState } from '../store/atoms';
+import { useRecoilState, useResetRecoilState } from 'recoil';
+import { cartDiscountState, currentModal } from '../store/atoms';
 import DiscountList from '../components/DiscountList';
+import Modal from '../components/layout/Modal';
 import { requestDiscounts } from '../api';
 
 interface DiscountContainerProps {
@@ -14,6 +15,8 @@ const DiscountContainer = (props: DiscountContainerProps) => {
   const [selectedDiscountList, setSelectedDiscountList] = useRecoilState(
     cartDiscountState
   );
+  const [modalState, setModalState] = useRecoilState(currentModal);
+  const closeModal = useResetRecoilState(currentModal);
 
   const [discount, setDiscount] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,10 +37,6 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     getDiscount();
   }, []);
 
-  const handleBack = () => {
-    history.goBack();
-  };
-
   const handleSelectedDiscountList = (
     item: [
       string,
@@ -54,14 +53,32 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     setSelectedDiscountList(newItemList);
   };
 
+  const handleBack = () => {
+    history.goBack();
+  };
+
+  const handleModalOpen = (title: string, children: ReactElement) => {
+    const newModal = { ...modalState, isDisplay: true, title, children };
+    setModalState(newModal);
+  };
+
   return (
-    <DiscountList
-      isLoading={isLoading}
-      discount={discount}
-      selectedDiscountList={selectedDiscountList}
-      handleSelectedDiscountList={handleSelectedDiscountList}
-      handleBack={handleBack}
-    />
+    <>
+      <DiscountList
+        isLoading={isLoading}
+        discountList={discount}
+        selectedDiscountList={selectedDiscountList}
+        handleSelectedDiscountList={handleSelectedDiscountList}
+        handleModalOpen={handleModalOpen}
+        handleBack={handleBack}
+      />
+      <Modal
+        isDisplay={modalState.isDisplay}
+        handleClose={closeModal}
+        title={modalState.title}
+        children={modalState.children}
+      />
+    </>
   );
 };
 

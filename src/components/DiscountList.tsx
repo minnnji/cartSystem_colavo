@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import Header from './layout/Header';
 import CheckBox from './layout/Checkbox.js';
 import styled from 'styled-components';
@@ -6,7 +6,7 @@ import theme from './layout/theme';
 
 interface DiscountListProps {
   isLoading: boolean;
-  discount: [
+  discountList: [
     string,
     {
       name: string;
@@ -23,31 +23,46 @@ interface DiscountListProps {
       }
     ]
   ) => void;
+  handleModalOpen: (title: string, children: ReactElement) => void;
   handleBack: () => void;
 }
 
 const DiscountList = (props: DiscountListProps) => {
   const {
     isLoading,
-    discount,
+    discountList,
     selectedDiscountList,
     handleSelectedDiscountList,
+    handleModalOpen,
     handleBack
   } = props;
 
   const isSelectedDiscount = (key: string) =>
     selectedDiscountList.some(selectedDiscount => selectedDiscount[0] === key);
 
-  const discounts = discount.map(item => {
+  const discounts = discountList.map(item => {
+    const isChecked = isSelectedDiscount(item[0]);
     return (
       <Li key={item[0]}>
         <CheckBox
-          checked={isSelectedDiscount(item[0])}
+          checked={isChecked}
           onChange={() => handleSelectedDiscountList(item)}
         />
         <Info>
           <Name>{item[1].name}</Name>
-          <Price>{Math.floor(item[1].rate * 100)}% 할인</Price>
+          <Discount>{Math.floor(item[1].rate * 100)}% 할인</Discount>
+          {isChecked && (
+            <Target
+              onClick={() =>
+                handleModalOpen(
+                  '할인 적용대상을 선택해주세요.',
+                  <div>시술리스트 노출예정</div>
+                )
+              }
+            >
+              전체 시술 적용 >
+            </Target>
+          )}
         </Info>
       </Li>
     );
@@ -84,10 +99,16 @@ const Name = styled.dt`
   margin-bottom: 10px;
 `;
 
-const Price = styled.dd`
+const Discount = styled.dd`
+  display: inline;
+  margin-right: 10px;
   font-weight: 200;
   font-size: 16px;
   color: ${theme.COLOR_PINK_2};
+`;
+
+const Target = styled(Discount)`
+  text-decoration: underline;
 `;
 
 export default DiscountList;
