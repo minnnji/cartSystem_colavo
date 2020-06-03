@@ -5,44 +5,24 @@ import styled from 'styled-components';
 import theme from './layout/theme';
 import DiscountTarget from './DiscountTarget';
 
+interface Discount {
+  name: string;
+  rate: number;
+}
+
+interface Item {
+  count: number;
+  name: string;
+  price: number;
+}
+
 interface DiscountListProps {
   isLoading: boolean;
-  discountList: [
-    string,
-    {
-      name: string;
-      rate: number;
-    }
-  ][];
-  itemList: [
-    string,
-    {
-      count: number;
-      name: string;
-      price: number;
-    }
-  ][];
+  discountList: [string, Discount][];
+  itemList: [string, Item][];
   selectedDiscountList: object[];
-  handleSelectedDiscountList: (
-    item: [
-      string,
-      {
-        name: string;
-        rate: number;
-      }
-    ]
-  ) => void;
-  handleTargetItem: (
-    discountKey: string,
-    targetItem: [
-      string,
-      {
-        count: number;
-        name: string;
-        price: number;
-      }
-    ][]
-  ) => void;
+  handleSelectedDiscountList: (item: [string, Discount]) => void;
+  handleTargetItem: (discountKey: string, targetItem: [string, Item][]) => void;
   handleModalOpen: (title: string, children: ReactElement) => void;
   handleBack: () => void;
   handleModalClose: () => void;
@@ -64,7 +44,7 @@ const DiscountList = (props: DiscountListProps) => {
   const isSelectedDiscount = (key: string) =>
     selectedDiscountList.some(selectedDiscount => selectedDiscount[0] === key);
 
-  const discounts = discountList.map(item => {
+  const discounts = discountList.map((item: [string, Discount]) => {
     const isChecked = isSelectedDiscount(item[0]);
     return (
       <Li key={item[0]}>

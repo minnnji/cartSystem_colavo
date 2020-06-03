@@ -6,6 +6,17 @@ import DiscountList from '../components/DiscountList';
 import Modal from '../components/layout/Modal';
 import { requestDiscounts } from '../api';
 
+interface Discount {
+  name: string;
+  rate: number;
+}
+
+interface Item {
+  count: number;
+  name: string;
+  price: number;
+}
+
 interface DiscountContainerProps {
   history: RouteComponentProps;
 }
@@ -19,18 +30,18 @@ const DiscountContainer = (props: DiscountContainerProps) => {
   const itemList = useRecoilValue(cartItemState);
   const closeModal = useResetRecoilState(currentModal);
 
-  const [discount, setDiscount] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [discountList, setDiscountList] = useState<[string, Discount][]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const getDiscount = async () => {
       setIsLoading(true);
 
       const data: object = await requestDiscounts();
-      const items: [string, object][] = [];
+      const newDiscountList: [string, Discount][] = [];
 
-      for (let key in data) items.push([key, data[key]]);
-      setDiscount(items);
+      for (let key in data) newDiscountList.push([key, data[key]]);
+      setDiscountList(newDiscountList);
 
       setIsLoading(false);
     };
@@ -38,15 +49,7 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     getDiscount();
   }, []);
 
-  const handleSelectedDiscountList = (
-    item: [
-      string,
-      {
-        name: string;
-        rate: number;
-      }
-    ]
-  ) => {
+  const handleSelectedDiscountList = (item: [string, Discount]) => {
     const index = selectedDiscountList.map(item => item[0]).indexOf(item[0]);
     const newItemList = [...selectedDiscountList];
 
@@ -56,14 +59,7 @@ const DiscountContainer = (props: DiscountContainerProps) => {
 
   const handleTargetItem = (
     discountKey: string,
-    targetItem: [
-      string,
-      {
-        count: number;
-        name: string;
-        price: number;
-      }
-    ][]
+    targetItem: [string, Item][]
   ) => {
     const itemCostList = targetItem.map(item => item[1].price * item[1].count);
     const totalCostForDiscount = itemCostList.reduce((acc, cur) => acc + cur);
@@ -97,7 +93,7 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     <>
       <DiscountList
         isLoading={isLoading}
-        discountList={discount}
+        discountList={discountList}
         itemList={itemList}
         selectedDiscountList={selectedDiscountList}
         handleSelectedDiscountList={handleSelectedDiscountList}

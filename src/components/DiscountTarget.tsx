@@ -64,11 +64,11 @@ const DiscountTarget = (props: DiscountTargetProps) => {
     index === -1 ? targetList.push(item) : targetList.splice(index, 1);
   };
 
-  useEffect(() => {
-    itemList.forEach(item => makeTargetList(item));
-  }, []);
-
   // TO DO.
+  // useEffect(() => {
+  //   itemList.forEach(item => makeTargetList(item));
+  // }, []);
+
   // const isSelectedItem = (currentKey: string) => {
   //   return discount[1].targetItem
   //     .map(target => target[0])
@@ -85,7 +85,7 @@ const DiscountTarget = (props: DiscountTargetProps) => {
             makeTargetList(item);
           }}
         />
-        <Info onclick={() => console.log(1)}>
+        <Info>
           <Name>{item[1].name}</Name>
           <Price>
             {item[1].price.toLocaleString()}원 x {item[1].count}

@@ -5,17 +5,21 @@ import { cartItemState } from '../store/atoms';
 import ItemList from '../components/ItemList';
 import { requestItem } from '../api';
 
+interface Item {
+  count: number;
+  name: string;
+  price: number;
+}
+
 interface DiscountContainerProps {
   history: RouteComponentProps;
 }
-
-const initialItemList = ['', { count: 0, name: '', price: 0 }];
 
 const ItemContainer = (props: DiscountContainerProps) => {
   const { history } = props;
   const [selectedItemList, setSelectedItemList] = useRecoilState(cartItemState);
 
-  const [itemList, setItemList] = useState([initialItemList]);
+  const [itemList, setItemList] = useState<[string, Item][]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -23,7 +27,7 @@ const ItemContainer = (props: DiscountContainerProps) => {
       setIsLoading(true);
 
       const data: object = await requestItem();
-      const items: [string, object][] = [];
+      const items: [string, Item][] = [];
 
       for (let key in data) items.push([key, data[key]]);
       setItemList(items);
@@ -38,16 +42,7 @@ const ItemContainer = (props: DiscountContainerProps) => {
     history.goBack();
   };
 
-  const handleSelectedItemList = (
-    item: [
-      string,
-      {
-        count: number;
-        name: string;
-        price: number;
-      }
-    ]
-  ) => {
+  const handleSelectedItemList = (item: [string, Item]) => {
     const index = selectedItemList.map(item => item[0]).indexOf(item[0]);
     const newItemList = [...selectedItemList];
 
