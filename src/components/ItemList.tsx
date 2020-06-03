@@ -4,27 +4,17 @@ import CheckBox from './layout/Checkbox.js';
 import styled from 'styled-components';
 import theme from './layout/theme';
 
+interface Item {
+  count: number;
+  name: string;
+  price: number;
+}
+
 interface DiscountListProps {
   isLoading: boolean;
-  itemList: [
-    string,
-    {
-      count: number;
-      name: string;
-      price: number;
-    }
-  ][];
+  itemList: [string, Item][];
   selectedItemList: object[];
-  handleSelectedItemList: (
-    item: [
-      string,
-      {
-        count: number;
-        name: string;
-        price: number;
-      }
-    ]
-  ) => void;
+  handleSelectedItemList: (item: [string, Item]) => void;
   handleBack: () => void;
 }
 

@@ -1,43 +1,25 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import CheckBox from './layout/Checkbox.js';
 import { Button } from './layout/Button';
 import styled from 'styled-components';
 import theme from './layout/theme';
 
+interface Discount {
+  name: string;
+  rate: number;
+}
+
+interface Item {
+  count: number;
+  name: string;
+  price: number;
+}
+
 interface DiscountTargetProps {
-  discount: [
-    string,
-    {
-      name: string;
-      rate: number;
-    }
-  ];
-  discountList: [
-    string,
-    {
-      name: string;
-      rate: number;
-    }
-  ][];
-  itemList: [
-    string,
-    {
-      count: number;
-      name: string;
-      price: number;
-    }
-  ][];
-  handleTargetItem: (
-    discountKey: string,
-    targetItem: [
-      string,
-      {
-        count: number;
-        name: string;
-        price: number;
-      }
-    ][]
-  ) => void;
+  discount: [string, Discount];
+  discountList: [string, Discount][];
+  itemList: [string, Item][];
+  handleTargetItem: (discountKey: string, targetItem: [string, Item][]) => void;
   handleModalOpen: (title: string, children: ReactElement) => void;
   handleModalClose: () => void;
 }
@@ -45,42 +27,23 @@ interface DiscountTargetProps {
 const DiscountTarget = (props: DiscountTargetProps) => {
   const {
     discount,
-    discountList,
     itemList,
     handleTargetItem,
     handleModalOpen,
     handleModalClose
   } = props;
 
-  const targetList: [
-    string,
-    { count: number; name: string; price: number }
-  ][] = [];
+  const targetList: [string, Item][] = [];
 
-  const makeTargetList = (
-    item: [string, { count: number; name: string; price: number }]
-  ) => {
+  const makeTargetList = (item: [string, Item]) => {
     const index = targetList.map(target => target[0]).indexOf(item[0]);
     index === -1 ? targetList.push(item) : targetList.splice(index, 1);
   };
-
-  // TO DO.
-  // useEffect(() => {
-  //   itemList.forEach(item => makeTargetList(item));
-  // }, []);
-
-  // const isSelectedItem = (currentKey: string) => {
-  //   return discount[1].targetItem
-  //     .map(target => target[0])
-  //     .some(targetKey => targetKey === currentKey);
-  // };
 
   const items = itemList.map(item => {
     return (
       <Li key={item[0]}>
         <CheckBox
-          // TO DO.
-          // checked={isSelectedItem(item[0])}
           onChange={() => {
             makeTargetList(item);
           }}

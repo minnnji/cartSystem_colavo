@@ -8,6 +8,17 @@ import NoList from './layout/NoList';
 import theme from './layout/theme';
 import { BsTrashFill } from 'react-icons/bs';
 
+interface Discount {
+  name: string;
+  rate: number;
+}
+
+interface Item {
+  count: number;
+  name: string;
+  price: number;
+}
+
 interface CartProps {
   history: RouteComponentProps;
   schedule: {
@@ -15,14 +26,7 @@ interface CartProps {
     date: string;
   };
   currencyCode: string;
-  itemList: [
-    string,
-    {
-      count: number;
-      name: string;
-      price: number;
-    }
-  ][];
+  itemList: [string, Item][];
   discountList: [
     string,
     {
