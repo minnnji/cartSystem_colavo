@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Header from './layout/Header';
 import CheckBox from './layout/Checkbox.js';
 import InputNumber from './layout/InputNumber';
-import SubmitButton from './layout/SubmitButton';
+import Submit from './layout/Submit';
 import theme from './layout/theme';
 
 interface Item {
@@ -12,7 +12,7 @@ interface Item {
   price: number;
 }
 
-interface DiscountListProps {
+interface ItemListProps {
   isLoading: boolean;
   items: { [key: string]: Item };
   selectedItemIds: { [key: string]: { count: number } };
@@ -20,26 +20,28 @@ interface DiscountListProps {
   submitItems: (object) => void;
 }
 
-const ItemList = (props: DiscountListProps) => {
+const ItemList = (props: ItemListProps) => {
   const { isLoading, items, selectedItemIds, handleBack, submitItems } = props;
 
-  const [newSelectedItems, setNewSelectedItems] = useState<{
+  const [newSelectedItemIds, setNewSelectedItemIds] = useState<{
     [key: string]: { count: number };
   }>(selectedItemIds);
 
   const isSelectedItem = (key: string) =>
-    newSelectedItems[key] ? true : false;
+    newSelectedItemIds[key] ? true : false;
 
   const toggleItem = (key: string, count: number) => {
-    const newItems = { ...newSelectedItems };
-    newSelectedItems[key] ? delete newItems[key] : (newItems[key] = { count });
-    setNewSelectedItems(newItems);
+    const newItems = { ...newSelectedItemIds };
+    newSelectedItemIds[key]
+      ? delete newItems[key]
+      : (newItems[key] = { count });
+    setNewSelectedItemIds(newItems);
   };
 
   const handleCount = (key: string, count: number) => {
-    const newItems = { ...newSelectedItems };
+    const newItems = { ...newSelectedItemIds };
     newItems[key] = { count };
-    setNewSelectedItems(newItems);
+    setNewSelectedItemIds(newItems);
   };
 
   const itemList = Object.keys(items).map((key: string) => {
@@ -59,7 +61,7 @@ const ItemList = (props: DiscountListProps) => {
           {isSelectedItem(key) && (
             <InputNumber
               currentCount={
-                isSelectedItem(key) ? newSelectedItems[key].count : 1
+                isSelectedItem(key) ? newSelectedItemIds[key].count : 1
               }
               max={10}
               handleCount={newCount => handleCount(key, newCount)}
@@ -80,13 +82,11 @@ const ItemList = (props: DiscountListProps) => {
           <form
             onSubmit={e => {
               e.preventDefault();
-              submitItems(newSelectedItems);
+              submitItems(newSelectedItemIds);
             }}
           >
-            <ul>{itemList}</ul>{' '}
-            <SubmitWrap>
-              <SubmitButton value='확인' />
-            </SubmitWrap>
+            <ul>{itemList}</ul>
+            <Submit value='확인' />
           </form>
         </Section>
       )}
@@ -128,15 +128,6 @@ const Price = styled.dd`
   font-weight: 200;
   font-size: 16px;
   color: ${theme.COLOR_GRREN_1};
-`;
-
-const SubmitWrap = styled.div`
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 140;
-  height: 50px;
 `;
 
 export default ItemList;

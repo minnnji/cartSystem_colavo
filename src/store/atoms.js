@@ -10,9 +10,14 @@ export const cartItemState = atom({
   default: {}
 });
 
+export const cartDiscountIdState = atom({
+  key: 'selectedDiscountIds',
+  default: {}
+});
+
 export const cartDiscountState = atom({
-  key: 'selectedDiscount',
-  default: []
+  key: 'selectedDiscounts',
+  default: {}
 });
 
 export const currentModal = atom({

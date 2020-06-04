@@ -4,15 +4,27 @@ import { useRecoilState } from 'recoil';
 import {
   cartItemIdState,
   cartItemState,
+  cartDiscountIdState,
   cartDiscountState
 } from '../store/atoms';
-import { requestCurrencyCode, requestItemByIdList } from '../api';
+import {
+  requestCurrencyCode,
+  requestItemByIdList,
+  requestDiscountByIdList
+} from '../api';
 import Cart from '../components/Cart';
 
 interface Item {
   count: number;
   name: string;
   price: number;
+}
+
+interface Discount {
+  name: string;
+  rate: number;
+  targetItems: { [key: string]: Item };
+  costForDiscount: number;
 }
 
 interface CartContainerProps {
@@ -28,9 +40,10 @@ const CartContainer = (props: CartContainerProps) => {
 
   const [cartItemIds, setCartItemIds] = useRecoilState(cartItemIdState);
   const [cartItems, setCartItems] = useRecoilState(cartItemState);
-  const [selectedDiscountList, setSelectedDiscountList] = useRecoilState(
-    cartDiscountState
+  const [cartDiscountIds, setCartDiscountIds] = useRecoilState(
+    cartDiscountIdState
   );
+  const [cartDiscounts, setCartDiscounts] = useRecoilState(cartDiscountState);
 
   const [isLoading, setIsLoading] = useState(false);
   const [totalCost, setTotalCost] = useState(0);
@@ -66,6 +79,31 @@ const CartContainer = (props: CartContainerProps) => {
     };
 
     if (cartItemIdList.length) getItem();
+  }, []);
+
+  const cartDiscountIdList = Object.keys(cartDiscountIds);
+  useEffect(() => {
+    // instead of getDiscountById
+    const getDiscount = async () => {
+      try {
+        setIsLoading(true);
+        const data:
+          | { [key: string]: Discount }
+          | undefined = await requestDiscountByIdList(cartDiscountIdList);
+
+        for (let key in data) {
+          data[key].targetItems = cartDiscountIds[key].targetItems;
+          data[key].costForDiscount = cartDiscountIds[key].costForDiscount;
+        }
+        setCartDiscounts(data);
+
+        setIsLoading(false);
+      } catch (err) {
+        console.warn(err);
+      }
+    };
+
+    if (cartDiscountIdList.length) getDiscount();
   }, []);
 
   // useEffect(() => {
@@ -104,6 +142,13 @@ const CartContainer = (props: CartContainerProps) => {
     setCartItems(newItems);
   };
 
+  const removeDiscount = (key: string) => {
+    const newDiscounts = { ...cartDiscounts };
+    delete newDiscounts[key];
+    setCartDiscountIds(newDiscounts);
+    setCartDiscounts(newDiscounts);
+  };
+
   // const handleItemCount = (key: string, count: number) => {
   //   const newItemList = seletedItemList.map(item => {
   //     const itemKey = item[0];
@@ -128,11 +173,11 @@ const CartContainer = (props: CartContainerProps) => {
       schedule={schedule}
       currencyCode={currencyCode}
       cartItems={cartItems}
-      discountList={selectedDiscountList}
+      cartDiscounts={cartDiscounts}
       totalCost={totalCost}
       handleItemCount={handleItemCount}
       removeItem={removeItem}
-      // removeDiscount={removeDiscount}
+      removeDiscount={removeDiscount}
     />
   );
 };

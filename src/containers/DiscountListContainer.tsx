@@ -2,7 +2,8 @@ import React, { ReactElement, useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import {
-  cartItemIdState,
+  cartItemState,
+  cartDiscountIdState,
   cartDiscountState,
   currentModal
 } from '../store/atoms';
@@ -27,65 +28,73 @@ interface DiscountContainerProps {
 
 const DiscountContainer = (props: DiscountContainerProps) => {
   const { history } = props;
-  const [selectedDiscountList, setSelectedDiscountList] = useRecoilState(
-    cartDiscountState
+  const [cartDiscountIds, setCartDiscountIds] = useRecoilState(
+    cartDiscountIdState
   );
   const [modalState, setModalState] = useRecoilState(currentModal);
-  const itemList = useRecoilValue(cartItemIdState);
+  const cartItems = useRecoilValue(cartItemState);
   const closeModal = useResetRecoilState(currentModal);
 
-  const [discountList, setDiscountList] = useState<[string, Discount][]>([]);
+  const [discounts, setDiscounts] = useState<{ [key: string]: Discount }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isUpdate, setIsUpdate] = useState<boolean>(false);
 
   useEffect(() => {
     const getDiscount = async () => {
-      setIsLoading(true);
-
-      const data: object = await requestDiscounts();
-      const newDiscountList: [string, Discount][] = [];
-
-      for (let key in data) newDiscountList.push([key, data[key]]);
-      setDiscountList(newDiscountList);
-
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const data: { [key: string]: Discount } = await requestDiscounts();
+        setDiscounts(data);
+        setIsLoading(false);
+      } catch (err) {
+        console.warn(err);
+      }
     };
-
     getDiscount();
   }, []);
 
-  const handleSelectedDiscountList = (item: [string, Discount]) => {
-    const index = selectedDiscountList.map(item => item[0]).indexOf(item[0]);
-    const newItemList = [...selectedDiscountList];
+  useEffect(() => {
+    if (isUpdate) history.push('/cart');
+  }, [isUpdate]);
 
-    index === -1 ? newItemList.push(item) : newItemList.splice(index, 1);
-    setSelectedDiscountList(newItemList);
-  };
+  // const handleSelectedDiscountList = (item: [string, Discount]) => {
+  //   const index = selectedDiscountList.map(item => item[0]).indexOf(item[0]);
+  //   const newItemList = [...selectedDiscountList];
 
-  const handleTargetItem = (
-    discountKey: string,
-    targetItem: [string, Item][]
-  ) => {
-    const itemCostList = targetItem.map(item => item[1].price * item[1].count);
-    const totalCostForDiscount = itemCostList.reduce((acc, cur) => acc + cur);
+  //   index === -1 ? newItemList.push(item) : newItemList.splice(index, 1);
+  //   setSelectedDiscountList(newItemList);
+  // };
 
-    const newList = selectedDiscountList.map(discount => {
-      const info = discount[1];
-      return discount[0] === discountKey
-        ? [
-            discountKey,
-            {
-              ...info,
-              targetItem,
-              discountCost: totalCostForDiscount * discount[1].rate
-            }
-          ]
-        : discount;
-    });
-    setSelectedDiscountList(newList);
-  };
+  // const handleTargetItem = (
+  //   discountKey: string,
+  //   targetItem: [string, Item][]
+  // ) => {
+  //   const itemCostList = targetItem.map(item => item[1].price * item[1].count);
+  //   const totalCostForDiscount = itemCostList.reduce((acc, cur) => acc + cur);
+
+  //   const newList = selectedDiscountList.map(discount => {
+  //     const info = discount[1];
+  //     return discount[0] === discountKey
+  //       ? [
+  //           discountKey,
+  //           {
+  //             ...info,
+  //             targetItem,
+  //             discountCost: totalCostForDiscount * discount[1].rate
+  //           }
+  //         ]
+  //       : discount;
+  //   });
+  //   setSelectedDiscountList(newList);
+  // };
 
   const handleBack = () => {
     history.goBack();
+  };
+
+  const submitDiscounts = (items = Object) => {
+    setCartDiscountIds(items);
+    setIsUpdate(true);
   };
 
   const handleModalOpen = (title: string, children: ReactElement) => {
@@ -97,11 +106,11 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     <>
       <DiscountList
         isLoading={isLoading}
-        discountList={discountList}
-        itemList={itemList}
-        selectedDiscountList={selectedDiscountList}
-        handleSelectedDiscountList={handleSelectedDiscountList}
-        handleTargetItem={handleTargetItem}
+        discounts={discounts}
+        cartItems={cartItems}
+        cartDiscountIds={cartDiscountIds}
+        submitDiscounts={submitDiscounts}
+        // handleTargetItem={handleTargetItem}
         handleModalOpen={handleModalOpen}
         handleModalClose={closeModal}
         handleBack={handleBack}

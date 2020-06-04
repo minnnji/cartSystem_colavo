@@ -11,6 +11,8 @@ import { BsTrashFill } from 'react-icons/bs';
 interface Discount {
   name: string;
   rate: number;
+  targetItems: { [key: string]: Item };
+  costForDiscount: number;
 }
 
 interface Item {
@@ -28,19 +30,11 @@ interface CartProps {
   };
   currencyCode: string;
   cartItems: { [key: string]: Item };
-  discountList: [
-    string,
-    {
-      name: string;
-      rate: number;
-      discountCost: number;
-      targetItem: [string, Item][];
-    }
-  ][];
+  cartDiscounts: { [key: string]: Discount };
   totalCost: number;
   handleItemCount: (key: string, count: number) => void;
   removeItem: (key: string) => void;
-  // removeDiscount: (key: string) => void;
+  removeDiscount: (key: string) => void;
 }
 
 const Cart = (props: CartProps) => {
@@ -50,11 +44,11 @@ const Cart = (props: CartProps) => {
     schedule,
     currencyCode,
     cartItems,
-    discountList,
+    cartDiscounts,
     totalCost,
     handleItemCount,
-    removeItem
-    // removeDiscount
+    removeItem,
+    removeDiscount
   } = props;
 
   const itemList = Object.keys(cartItems).map((key: string) => {
@@ -78,23 +72,22 @@ const Cart = (props: CartProps) => {
     );
   });
 
-  const targetItems = targetList =>
-    targetList.map(item => <Target key={item[0]}>{item[1].name}</Target>);
+  const targetItemList = targetItems => {
+    const items: Item[] = Object.values(targetItems);
+    return items.map((item: Item, i) => <Target key={i}>{item.name}</Target>);
+  };
 
-  const discounts = discountList.map(discount => {
+  const discountList = Object.keys(cartDiscounts).map((key: string) => {
+    const { name, rate, targetItems, costForDiscount } = cartDiscounts[key];
     return (
-      <Li key={discount[0]}>
+      <Li key={key}>
         <Info>
-          <Title>{discount[1].name}</Title>
-          <Memo>{Math.floor(discount[1].rate * 100)}% 할인</Memo>
-          {discount[1].targetItem && (
-            <Memo>{targetItems(discount[1].targetItem)}</Memo>
-          )}
+          <Title>{name}</Title>
+          <Memo>{Math.floor(rate * 100)}% 할인</Memo>
+          <Memo>{targetItemList(targetItems)}</Memo>
         </Info>
-        <Discount>- {Math.floor(discount[1].discountCost)}원</Discount>
-        <RemoveButton
-        // onClick={() => removeDiscount(discount[0])}
-        >
+        <Discount>- {Math.floor(costForDiscount).toLocaleString()}원</Discount>
+        <RemoveButton onClick={() => removeDiscount(key)}>
           <BsTrashFill />
         </RemoveButton>
       </Li>
@@ -125,10 +118,10 @@ const Cart = (props: CartProps) => {
             )}
           </ul>
         </Content>
-        {discounts.length > 0 && (
+        {Object.keys(cartDiscounts).length > 0 && (
           <Content>
             <SubTitle>할인</SubTitle>
-            <ul>{discounts}</ul>
+            <ul>{discountList}</ul>
           </Content>
         )}
         <CostWrap>
