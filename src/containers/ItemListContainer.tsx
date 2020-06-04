@@ -21,6 +21,7 @@ const ItemContainer = (props: DiscountContainerProps) => {
 
   const [items, setItems] = useState<{ [key: string]: Item }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   useEffect(() => {
     const getItem = async () => {
@@ -35,14 +36,19 @@ const ItemContainer = (props: DiscountContainerProps) => {
     };
 
     getItem();
-  }, [selectedItemIds]);
+  }, []);
+
+  useEffect(() => {
+    if (isUpdate) history.push('/cart');
+  }, [isUpdate]);
 
   const handleBack = () => {
     history.goBack();
   };
 
-  const handleNext = () => {
-    history.push('/cart');
+  const submitItems = (items = Object) => {
+    setSelectedItemIds(items);
+    setIsUpdate(true);
   };
 
   return (
@@ -50,9 +56,8 @@ const ItemContainer = (props: DiscountContainerProps) => {
       isLoading={isLoading}
       items={items}
       selectedItemIds={selectedItemIds}
-      setSelectedItemIds={setSelectedItemIds}
       handleBack={handleBack}
-      handleNext={handleNext}
+      submitItems={submitItems}
     />
   );
 };

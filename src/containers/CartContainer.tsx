@@ -90,6 +90,20 @@ const CartContainer = (props: CartContainerProps) => {
   //   handleTotalCost();
   // });
 
+  const handleItemCount = (key: string, count: number) => {
+    const updateItemInfo = { ...cartItems[key], count };
+    const newItems = { ...cartItems };
+    newItems[key] = updateItemInfo;
+    setCartItemIds(newItems);
+  };
+
+  const removeItem = (key: string) => {
+    const newItems = { ...cartItems };
+    delete newItems[key];
+    setCartItemIds(newItems);
+    setCartItems(newItems);
+  };
+
   // const handleItemCount = (key: string, count: number) => {
   //   const newItemList = seletedItemList.map(item => {
   //     const itemKey = item[0];
@@ -97,11 +111,6 @@ const CartContainer = (props: CartContainerProps) => {
   //     return itemKey === key ? [itemKey, { ...itemInfo, count: count }] : item;
   //   });
 
-  //   setSelectedItemList(newItemList);
-  // };
-
-  // const removeItem = (key: string) => {
-  //   const newItemList = seletedItemList.filter(item => item[0] !== key);
   //   setSelectedItemList(newItemList);
   // };
 
@@ -118,11 +127,11 @@ const CartContainer = (props: CartContainerProps) => {
       history={history}
       schedule={schedule}
       currencyCode={currencyCode}
-      items={cartItems}
+      cartItems={cartItems}
       discountList={selectedDiscountList}
       totalCost={totalCost}
-      // handleItemCount={handleItemCount}
-      // removeItem={removeItem}
+      handleItemCount={handleItemCount}
+      removeItem={removeItem}
       // removeDiscount={removeDiscount}
     />
   );

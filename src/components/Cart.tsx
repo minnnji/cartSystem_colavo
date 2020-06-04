@@ -27,26 +27,19 @@ interface CartProps {
     date: string;
   };
   currencyCode: string;
-  items: { [key: string]: Item };
+  cartItems: { [key: string]: Item };
   discountList: [
     string,
     {
       name: string;
       rate: number;
       discountCost: number;
-      targetItem: [
-        string,
-        {
-          count: number;
-          name: string;
-          price: number;
-        }
-      ][];
+      targetItem: [string, Item][];
     }
   ][];
   totalCost: number;
-  // handleItemCount: (key: string, count: number) => void;
-  // removeItem: (key: string) => void;
+  handleItemCount: (key: string, count: number) => void;
+  removeItem: (key: string) => void;
   // removeDiscount: (key: string) => void;
 }
 
@@ -56,18 +49,16 @@ const Cart = (props: CartProps) => {
     history,
     schedule,
     currencyCode,
-    items,
+    cartItems,
     discountList,
-    totalCost
-    // handleItemCount,
-    // removeItem,
+    totalCost,
+    handleItemCount,
+    removeItem
     // removeDiscount
   } = props;
 
-  console.log(items);
-
-  const itemList = Object.keys(items).map((key: string) => {
-    const { count, name, price } = items[key];
+  const itemList = Object.keys(cartItems).map((key: string) => {
+    const { count, name, price } = cartItems[key];
     return (
       <Li key={key}>
         <Info>
@@ -76,13 +67,11 @@ const Cart = (props: CartProps) => {
           <InputNumber
             currentCount={count}
             max={10}
-            // handleCount={count => handleItemCount(key, count)}
+            handleCount={newCount => handleItemCount(key, newCount)}
           />
         </Info>
         <Cost>{(price * count).toLocaleString()}원</Cost>
-        <RemoveButton
-        // onClick={() => removeItem(key)}
-        >
+        <RemoveButton onClick={() => removeItem(key)}>
           <BsTrashFill />
         </RemoveButton>
       </Li>
@@ -129,7 +118,7 @@ const Cart = (props: CartProps) => {
           <ul>
             {isLoading ? (
               <div>Loading...</div>
-            ) : Object.keys(items).length ? (
+            ) : Object.keys(cartItems).length ? (
               itemList
             ) : (
               <NoList text='시술을 추가해주세요.' />

@@ -16,20 +16,12 @@ interface DiscountListProps {
   isLoading: boolean;
   items: { [key: string]: Item };
   selectedItemIds: { [key: string]: { count: number } };
-  setSelectedItemIds: (object) => void;
   handleBack: () => void;
-  handleNext: () => void;
+  submitItems: (object) => void;
 }
 
 const ItemList = (props: DiscountListProps) => {
-  const {
-    isLoading,
-    items,
-    selectedItemIds,
-    setSelectedItemIds,
-    handleBack,
-    handleNext
-  } = props;
+  const { isLoading, items, selectedItemIds, handleBack, submitItems } = props;
 
   const [newSelectedItems, setNewSelectedItems] = useState<{
     [key: string]: { count: number };
@@ -88,8 +80,7 @@ const ItemList = (props: DiscountListProps) => {
           <form
             onSubmit={e => {
               e.preventDefault();
-              setSelectedItemIds(newSelectedItems);
-              handleNext();
+              submitItems(newSelectedItems);
             }}
           >
             <ul>{itemList}</ul>{' '}
