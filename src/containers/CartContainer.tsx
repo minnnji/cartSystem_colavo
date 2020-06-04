@@ -131,40 +131,30 @@ const CartContainer = (props: CartContainerProps) => {
   const handleItemCount = (key: string, count: number) => {
     const updateItemInfo = { ...cartItems[key], count };
     const newItems = { ...cartItems };
+    const newItemIds = { ...cartItemIds };
     newItems[key] = updateItemInfo;
-    setCartItemIds(newItems);
+    newItemIds[key] = { count };
+    setCartItems(newItems);
+    setCartItemIds(newItemIds);
   };
 
   const removeItem = (key: string) => {
+    const newItemIds = { ...cartItemIds };
+    delete newItemIds[key];
+    setCartItemIds(newItemIds);
     const newItems = { ...cartItems };
     delete newItems[key];
-    setCartItemIds(newItems);
     setCartItems(newItems);
   };
 
   const removeDiscount = (key: string) => {
+    const newDiscountIds = { ...cartDiscounts };
+    delete newDiscountIds[key];
+    setCartDiscountIds(newDiscountIds);
     const newDiscounts = { ...cartDiscounts };
     delete newDiscounts[key];
-    setCartDiscountIds(newDiscounts);
     setCartDiscounts(newDiscounts);
   };
-
-  // const handleItemCount = (key: string, count: number) => {
-  //   const newItemList = seletedItemList.map(item => {
-  //     const itemKey = item[0];
-  //     const itemInfo = item[1];
-  //     return itemKey === key ? [itemKey, { ...itemInfo, count: count }] : item;
-  //   });
-
-  //   setSelectedItemList(newItemList);
-  // };
-
-  // const removeDiscount = (key: string) => {
-  //   const newDiscountList = selectedDiscountList.filter(
-  //     discount => discount[0] !== key
-  //   );
-  //   setSelectedDiscountList(newDiscountList);
-  // };
 
   return (
     <Cart
