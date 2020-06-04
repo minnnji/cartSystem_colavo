@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { cartItemState } from '../store/atoms';
+import { cartItemIdState } from '../store/atoms';
 import ItemList from '../components/ItemList';
 import { requestItem } from '../api';
 
@@ -17,46 +17,42 @@ interface DiscountContainerProps {
 
 const ItemContainer = (props: DiscountContainerProps) => {
   const { history } = props;
-  const [selectedItemList, setSelectedItemList] = useRecoilState(cartItemState);
+  const [selectedItemIds, setSelectedItemIds] = useRecoilState(cartItemIdState);
 
-  const [itemList, setItemList] = useState<[string, Item][]>([]);
+  const [items, setItems] = useState<{ [key: string]: Item }>({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getItem = async () => {
-      setIsLoading(true);
-
-      const data: object = await requestItem();
-      const items: [string, Item][] = [];
-
-      for (let key in data) items.push([key, data[key]]);
-      setItemList(items);
-
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const data: { [key: string]: Item } = await requestItem();
+        setItems(data);
+        setIsLoading(false);
+      } catch (err) {
+        console.warn(err);
+      }
     };
 
     getItem();
-  }, []);
+  }, [selectedItemIds]);
 
   const handleBack = () => {
     history.goBack();
   };
 
-  const handleSelectedItemList = (item: [string, Item]) => {
-    const index = selectedItemList.map(item => item[0]).indexOf(item[0]);
-    const newItemList = [...selectedItemList];
-
-    index === -1 ? newItemList.push(item) : newItemList.splice(index, 1);
-    setSelectedItemList(newItemList);
+  const handleNext = () => {
+    history.push('/cart');
   };
 
   return (
     <ItemList
       isLoading={isLoading}
-      itemList={itemList}
-      selectedItemList={selectedItemList}
-      handleSelectedItemList={handleSelectedItemList}
+      items={items}
+      selectedItemIds={selectedItemIds}
+      setSelectedItemIds={setSelectedItemIds}
       handleBack={handleBack}
+      handleNext={handleNext}
     />
   );
 };

@@ -20,13 +20,14 @@ interface Item {
 }
 
 interface CartProps {
+  isLoading: boolean;
   history: RouteComponentProps;
   schedule: {
     name: string;
     date: string;
   };
   currencyCode: string;
-  itemList: [string, Item][];
+  items: { [key: string]: Item };
   discountList: [
     string,
     {
@@ -44,38 +45,44 @@ interface CartProps {
     }
   ][];
   totalCost: number;
-  handleItemCount: (key: string, count: number) => void;
-  removeItem: (key: string) => void;
-  removeDiscount: (key: string) => void;
+  // handleItemCount: (key: string, count: number) => void;
+  // removeItem: (key: string) => void;
+  // removeDiscount: (key: string) => void;
 }
 
 const Cart = (props: CartProps) => {
   const {
+    isLoading,
     history,
     schedule,
     currencyCode,
-    itemList,
+    items,
     discountList,
-    totalCost,
-    handleItemCount,
-    removeItem,
-    removeDiscount
+    totalCost
+    // handleItemCount,
+    // removeItem,
+    // removeDiscount
   } = props;
 
-  const items = itemList.map(item => {
+  console.log(items);
+
+  const itemList = Object.keys(items).map((key: string) => {
+    const { count, name, price } = items[key];
     return (
-      <Li key={item[0]}>
+      <Li key={key}>
         <Info>
-          <Title>{item[1].name}</Title>
-          <Memo>{item[1].price.toLocaleString()}원</Memo>
+          <Title>{name}</Title>
+          <Memo>{price.toLocaleString()}원</Memo>
           <InputNumber
-            currentCount={item[1].count}
+            currentCount={count}
             max={10}
-            handleCount={count => handleItemCount(item[0], count)}
+            // handleCount={count => handleItemCount(key, count)}
           />
         </Info>
-        <Cost>{(item[1].price * item[1].count).toLocaleString()}원</Cost>
-        <RemoveButton onClick={() => removeItem(item[0])}>
+        <Cost>{(price * count).toLocaleString()}원</Cost>
+        <RemoveButton
+        // onClick={() => removeItem(key)}
+        >
           <BsTrashFill />
         </RemoveButton>
       </Li>
@@ -96,7 +103,9 @@ const Cart = (props: CartProps) => {
           )}
         </Info>
         <Discount>- {Math.floor(discount[1].discountCost)}원</Discount>
-        <RemoveButton onClick={() => removeDiscount(discount[0])}>
+        <RemoveButton
+        // onClick={() => removeDiscount(discount[0])}
+        >
           <BsTrashFill />
         </RemoveButton>
       </Li>
@@ -118,7 +127,13 @@ const Cart = (props: CartProps) => {
         <Content>
           <SubTitle>시술</SubTitle>
           <ul>
-            {items.length ? items : <NoList text='시술을 추가해주세요.' />}
+            {isLoading ? (
+              <div>Loading...</div>
+            ) : Object.keys(items).length ? (
+              itemList
+            ) : (
+              <NoList text='시술을 추가해주세요.' />
+            )}
           </ul>
         </Content>
         {discounts.length > 0 && (

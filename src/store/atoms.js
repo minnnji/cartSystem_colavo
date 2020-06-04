@@ -1,8 +1,13 @@
 import { atom } from 'recoil';
 
+export const cartItemIdState = atom({
+  key: 'selectedItemIds',
+  default: {}
+});
+
 export const cartItemState = atom({
-  key: 'selectedItem',
-  default: []
+  key: 'selectedItems',
+  default: {}
 });
 
 export const cartDiscountState = atom({

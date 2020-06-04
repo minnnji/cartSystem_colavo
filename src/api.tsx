@@ -12,6 +12,24 @@ export const requestItem = async () => {
   }
 };
 
+export const requestItemByIdList = async (idList: string[]) => {
+  try {
+    const result = {};
+    const { data } = await axios.get(
+      'https://us-central1-colavolab.cloudfunctions.net/requestAssignmentCalculatorData'
+    );
+
+    for (let i = 0; i < idList.length; i++) {
+      const id = idList[i];
+      result[id] = data.items[id];
+    }
+
+    return result;
+  } catch (err) {
+    alert(err);
+  }
+};
+
 export const requestDiscounts = async () => {
   try {
     const { data } = await axios.get(

@@ -1,7 +1,11 @@
 import React, { ReactElement, useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
-import { cartItemState, cartDiscountState, currentModal } from '../store/atoms';
+import {
+  cartItemIdState,
+  cartDiscountState,
+  currentModal
+} from '../store/atoms';
 import DiscountList from '../components/DiscountList';
 import Modal from '../components/layout/Modal';
 import { requestDiscounts } from '../api';
@@ -27,7 +31,7 @@ const DiscountContainer = (props: DiscountContainerProps) => {
     cartDiscountState
   );
   const [modalState, setModalState] = useRecoilState(currentModal);
-  const itemList = useRecoilValue(cartItemState);
+  const itemList = useRecoilValue(cartItemIdState);
   const closeModal = useResetRecoilState(currentModal);
 
   const [discountList, setDiscountList] = useState<[string, Discount][]>([]);

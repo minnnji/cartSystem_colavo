@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import Header from './layout/Header';
 import CheckBox from './layout/Checkbox.js';
-import styled from 'styled-components';
+import InputNumber from './layout/InputNumber';
+import SubmitButton from './layout/SubmitButton';
 import theme from './layout/theme';
 
 interface Item {
@@ -12,35 +14,66 @@ interface Item {
 
 interface DiscountListProps {
   isLoading: boolean;
-  itemList: [string, Item][];
-  selectedItemList: object[];
-  handleSelectedItemList: (item: [string, Item]) => void;
+  items: { [key: string]: Item };
+  selectedItemIds: { [key: string]: { count: number } };
+  setSelectedItemIds: (object) => void;
   handleBack: () => void;
+  handleNext: () => void;
 }
 
 const ItemList = (props: DiscountListProps) => {
   const {
     isLoading,
-    itemList,
-    selectedItemList,
-    handleSelectedItemList,
-    handleBack
+    items,
+    selectedItemIds,
+    setSelectedItemIds,
+    handleBack,
+    handleNext
   } = props;
 
-  const isSelectedItem = (key: string) =>
-    selectedItemList.some(selectedItem => selectedItem[0] === key);
+  const [newSelectedItems, setNewSelectedItems] = useState<{
+    [key: string]: { count: number };
+  }>(selectedItemIds);
 
-  const items = itemList.map(item => {
+  const isSelectedItem = (key: string) =>
+    newSelectedItems[key] ? true : false;
+
+  const toggleItem = (key: string, count: number) => {
+    const newItems = { ...newSelectedItems };
+    newSelectedItems[key] ? delete newItems[key] : (newItems[key] = { count });
+    setNewSelectedItems(newItems);
+  };
+
+  const handleCount = (key: string, count: number) => {
+    const newItems = { ...newSelectedItems };
+    newItems[key] = { count };
+    setNewSelectedItems(newItems);
+  };
+
+  const itemList = Object.keys(items).map((key: string) => {
+    const { count, name, price } = items[key];
+
     return (
-      <Li key={item[0]}>
+      <Li key={key}>
         <CheckBox
-          checked={isSelectedItem(item[0])}
-          onChange={() => handleSelectedItemList(item)}
+          checked={isSelectedItem(key)}
+          onChange={() => toggleItem(key, count)}
         />
-        <Info onclick={() => handleSelectedItemList(item)}>
-          <Name>{item[1].name}</Name>
-          <Price>{item[1].price.toLocaleString()}원</Price>
-        </Info>
+        <InfoWrapper>
+          <Info onClick={() => toggleItem(key, count)}>
+            <Name>{name}</Name>
+            <Price>{price.toLocaleString()}원</Price>
+          </Info>
+          {isSelectedItem(key) && (
+            <InputNumber
+              currentCount={
+                isSelectedItem(key) ? newSelectedItems[key].count : 1
+              }
+              max={10}
+              handleCount={newCount => handleCount(key, newCount)}
+            />
+          )}
+        </InfoWrapper>
       </Li>
     );
   });
@@ -48,13 +81,31 @@ const ItemList = (props: DiscountListProps) => {
   return (
     <>
       <Header title='시술 추가하기' handleBack={handleBack} />
-      <Section>{isLoading ? <div>Loading...</div> : <ul>{items}</ul>}</Section>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <Section>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              setSelectedItemIds(newSelectedItems);
+              handleNext();
+            }}
+          >
+            <ul>{itemList}</ul>{' '}
+            <SubmitWrap>
+              <SubmitButton value='확인' />
+            </SubmitWrap>
+          </form>
+        </Section>
+      )}
     </>
   );
 };
 
 const Section = styled.section`
   padding: 16px;
+  margin-bottom: 40px;
 `;
 
 const Li = styled.li`
@@ -67,7 +118,15 @@ const Li = styled.li`
 const Info = styled.dl`
   display: inline-block;
   margin-right: 10px;
+  width: 70%;
   font-size: 18px;
+`;
+
+const InfoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 const Name = styled.dt`
@@ -78,6 +137,15 @@ const Price = styled.dd`
   font-weight: 200;
   font-size: 16px;
   color: ${theme.COLOR_GRREN_1};
+`;
+
+const SubmitWrap = styled.div`
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 140;
+  height: 50px;
 `;
 
 export default ItemList;
