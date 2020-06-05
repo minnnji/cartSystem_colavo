@@ -1,13 +1,8 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import CheckBox from './layout/Checkbox.js';
 import { Button } from './layout/Button';
 import styled from 'styled-components';
 import theme from './layout/theme';
-
-interface Discount {
-  name: string;
-  rate: number;
-}
 
 interface Item {
   count: number;
@@ -16,42 +11,61 @@ interface Item {
 }
 
 interface DiscountTargetProps {
-  discount: [string, Discount];
-  discountList: [string, Discount][];
-  itemList: [string, Item][];
-  handleTargetItem: (discountKey: string, targetItem: [string, Item][]) => void;
+  children: JSX.Element[];
+  discountKey: string;
+  discountName: string;
+  cartItems: { [key: string]: Item };
+  targetItems: { [key: string]: Item };
+  submitTargetItems: (
+    discountKey: string,
+    targetItem: { [key: string]: Item }
+  ) => void;
   handleModalOpen: (title: string, children: ReactElement) => void;
   handleModalClose: () => void;
 }
 
 const DiscountTarget = (props: DiscountTargetProps) => {
   const {
-    discount,
-    itemList,
-    handleTargetItem,
+    children,
+    discountKey,
+    discountName,
+    cartItems,
+    targetItems,
+    submitTargetItems,
     handleModalOpen,
     handleModalClose
   } = props;
 
-  const targetList: [string, Item][] = [];
+  const [targets, setTargets] = useState(targetItems);
 
-  const makeTargetList = (item: [string, Item]) => {
-    const index = targetList.map(target => target[0]).indexOf(item[0]);
-    index === -1 ? targetList.push(item) : targetList.splice(index, 1);
+  const makeTargetList = (key: string, item: Item) => {
+    setTargets(targets => {
+      const newTargets = { ...targets };
+      newTargets.hasOwnProperty(key)
+        ? delete newTargets[key]
+        : (newTargets[key] = item);
+      return newTargets;
+    });
   };
 
-  const items = itemList.map(item => {
+  const isSelectedItem = (key: string) => targets.hasOwnProperty(key);
+
+  const itemList = Object.keys(cartItems).map((key: string) => {
+    const { count, name, price } = cartItems[key];
+    const isChecked = isSelectedItem(key);
+
     return (
-      <Li key={item[0]}>
+      <Li key={name}>
         <CheckBox
+          defaultChecked={isChecked}
           onChange={() => {
-            makeTargetList(item);
+            makeTargetList(key, cartItems[key]);
           }}
         />
         <Info>
-          <Name>{item[1].name}</Name>
+          <Name>{name}</Name>
           <Price>
-            {item[1].price.toLocaleString()}원 x {item[1].count}
+            {price.toLocaleString()}원 x {count}
           </Price>
         </Info>
       </Li>
@@ -63,14 +77,14 @@ const DiscountTarget = (props: DiscountTargetProps) => {
       <Target
         onClick={() =>
           handleModalOpen(
-            `[${discount[1].name}] 적용대상을 선택해주세요.`,
+            `[${discountName}] 적용대상을 선택해주세요.`,
             <>
-              {items}
+              {itemList}
               <Button
                 purple
                 type='button'
                 onClick={() => {
-                  handleTargetItem(discount[0], targetList);
+                  submitTargetItems(discountKey, targets);
                   handleModalClose();
                 }}
               >
@@ -80,7 +94,7 @@ const DiscountTarget = (props: DiscountTargetProps) => {
           )
         }
       >
-        할인 적용 대상을 선택해주세요 >
+        {children}
       </Target>
     </>
   );

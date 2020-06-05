@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useResetRecoilState } from 'recoil';
 import {
   cartItemIdState,
   cartItemState,
   cartDiscountIdState,
-  cartDiscountState
+  cartDiscountState,
+  currentModal
 } from '../store/atoms';
 import {
   requestCurrencyCode,
@@ -13,6 +14,7 @@ import {
   requestDiscountByIdList
 } from '../api';
 import Cart from '../components/Cart';
+import Modal from '../components/layout/Modal';
 
 interface Item {
   count: number;
@@ -44,6 +46,9 @@ const CartContainer = (props: CartContainerProps) => {
     cartDiscountIdState
   );
   const [cartDiscounts, setCartDiscounts] = useRecoilState(cartDiscountState);
+  const [modalState, setModalState] = useRecoilState(currentModal);
+
+  const closeModal = useResetRecoilState(currentModal);
 
   const [isLoading, setIsLoading] = useState(false);
   const [totalCost, setTotalCost] = useState(0);
@@ -148,7 +153,7 @@ const CartContainer = (props: CartContainerProps) => {
   };
 
   const removeDiscount = (key: string) => {
-    const newDiscountIds = { ...cartDiscounts };
+    const newDiscountIds = { ...cartDiscountIds };
     delete newDiscountIds[key];
     setCartDiscountIds(newDiscountIds);
     const newDiscounts = { ...cartDiscounts };
@@ -156,19 +161,42 @@ const CartContainer = (props: CartContainerProps) => {
     setCartDiscounts(newDiscounts);
   };
 
+  const submitTargetItems = (discountKey, targetItems) => {
+    const newDiscounts = { ...cartDiscounts };
+    const newDiscountInfo = { ...newDiscounts[discountKey], targetItems };
+    newDiscounts[discountKey] = newDiscountInfo;
+    setCartDiscounts(newDiscounts);
+  };
+
+  const handleModalOpen = (title: string, children: ReactElement) => {
+    const newModal = { ...modalState, isDisplay: true, title, children };
+    setModalState(newModal);
+  };
+
   return (
-    <Cart
-      isLoading={isLoading}
-      history={history}
-      schedule={schedule}
-      currencyCode={currencyCode}
-      cartItems={cartItems}
-      cartDiscounts={cartDiscounts}
-      totalCost={totalCost}
-      handleItemCount={handleItemCount}
-      removeItem={removeItem}
-      removeDiscount={removeDiscount}
-    />
+    <>
+      <Cart
+        isLoading={isLoading}
+        history={history}
+        schedule={schedule}
+        currencyCode={currencyCode}
+        cartItems={cartItems}
+        cartDiscounts={cartDiscounts}
+        totalCost={totalCost}
+        handleItemCount={handleItemCount}
+        removeItem={removeItem}
+        removeDiscount={removeDiscount}
+        submitTargetItems={submitTargetItems}
+        handleModalOpen={handleModalOpen}
+        handleModalClose={closeModal}
+      />
+      <Modal
+        isDisplay={modalState.isDisplay}
+        handleClose={closeModal}
+        title={modalState.title}
+        children={modalState.children}
+      />
+    </>
   );
 };
 

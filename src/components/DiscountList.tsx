@@ -1,10 +1,9 @@
-import React, { useState, ReactElement } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from './layout/Header';
 import CheckBox from './layout/Checkbox.js';
 import theme from './layout/theme';
 import Submit from './layout/Submit';
-import DiscountTarget from './DiscountTarget';
 
 interface Discount {
   name: string;
@@ -21,12 +20,14 @@ interface DiscountListProps {
   isLoading: boolean;
   discounts: { [key: string]: Discount };
   cartItems: { [key: string]: Item };
-  cartDiscountIds: string[];
+  cartDiscountIds: {
+    [key: string]: {
+      targetItems: { [key: string]: Item };
+      costForDiscount: number;
+    };
+  };
   submitDiscounts: (object) => void;
-  // handleTargetItem: (discountKey: string, targetItem: [string, Item][]) => void;
-  handleModalOpen: (title: string, children: ReactElement) => void;
   handleBack: () => void;
-  handleModalClose: () => void;
 }
 
 const DiscountList = (props: DiscountListProps) => {
@@ -36,13 +37,10 @@ const DiscountList = (props: DiscountListProps) => {
     cartItems,
     cartDiscountIds,
     submitDiscounts,
-    // handleTargetItem,
-    handleModalOpen,
-    handleBack,
-    handleModalClose
+    handleBack
   } = props;
 
-  const [newSelectedDiscountIds, setNewSelectedDiscountIds] = useState<object>(
+  const [newSelectedDiscountIds, setNewSelectedDiscountIds] = useState(
     cartDiscountIds
   );
 
@@ -76,23 +74,15 @@ const DiscountList = (props: DiscountListProps) => {
           checked={isChecked}
           onChange={() => toggleDiscount(key, rate)}
         />
-        <Info
-          onClick={() => {
-            toggleDiscount(key, rate);
-          }}
-        >
-          <Name>{name}</Name>
+        <Info>
+          <Name
+            onClick={() => {
+              toggleDiscount(key, rate);
+            }}
+          >
+            {name}
+          </Name>
           <Discount>{Math.floor(rate * 100)}% 할인</Discount>
-          {/* {isChecked && (
-            <DiscountTarget
-              discount={item}
-              discountList={discountList}
-              itemList={itemList}
-              handleTargetItem={handleTargetItem}
-              handleModalOpen={handleModalOpen}
-              handleModalClose={handleModalClose}
-            />
-          )} */}
         </Info>
       </Li>
     );

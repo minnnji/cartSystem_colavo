@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import CartHeader from './layout/CartHeader';
@@ -6,6 +6,7 @@ import { Button, HalfButton } from './layout/Button';
 import InputNumber from './layout/InputNumber';
 import NoList from './layout/NoList';
 import theme from './layout/theme';
+import DiscountTarget from './DiscountTarget';
 import { BsTrashFill } from 'react-icons/bs';
 
 interface Discount {
@@ -35,6 +36,12 @@ interface CartProps {
   handleItemCount: (key: string, count: number) => void;
   removeItem: (key: string) => void;
   removeDiscount: (key: string) => void;
+  submitTargetItems: (
+    discountKey: string,
+    targetItem: { [key: string]: Item }
+  ) => void;
+  handleModalOpen: (title: string, children: ReactElement) => void;
+  handleModalClose: () => void;
 }
 
 const Cart = (props: CartProps) => {
@@ -48,7 +55,10 @@ const Cart = (props: CartProps) => {
     totalCost,
     handleItemCount,
     removeItem,
-    removeDiscount
+    removeDiscount,
+    submitTargetItems,
+    handleModalOpen,
+    handleModalClose
   } = props;
 
   const itemList = Object.keys(cartItems).map((key: string) => {
@@ -84,7 +94,16 @@ const Cart = (props: CartProps) => {
         <Info>
           <Title>{name}</Title>
           <Memo>{Math.floor(rate * 100)}% 할인</Memo>
-          <Memo>{targetItemList(targetItems)}</Memo>
+          <DiscountTarget
+            children={targetItemList(targetItems)}
+            discountKey={key}
+            discountName={name}
+            cartItems={cartItems}
+            targetItems={targetItems}
+            submitTargetItems={submitTargetItems}
+            handleModalOpen={handleModalOpen}
+            handleModalClose={handleModalClose}
+          />
         </Info>
         <Discount>- {Math.floor(costForDiscount).toLocaleString()}원</Discount>
         <RemoveButton onClick={() => removeDiscount(key)}>
