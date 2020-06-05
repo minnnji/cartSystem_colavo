@@ -2,6 +2,8 @@
 
 [최민지](https://www.about-minji.com/) - 콜라보그라운드 과제(2020.05.30. ~ 2020.06.02.)
 
+![colavo_preview](./colavo_preview.gif)
+
 ## Features
 
 - 해당 살롱에서 적용 가능한 시술, 장바구니에 추가/삭제 기능
