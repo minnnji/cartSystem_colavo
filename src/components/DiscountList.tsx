@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from './layout/Header';
+import Loading from './layout/Loading';
 import CheckBox from './layout/Checkbox.js';
 import theme from './layout/theme';
 import Submit from './layout/Submit';
@@ -92,7 +93,7 @@ const DiscountList = (props: DiscountListProps) => {
     <>
       <Header title='할인 추가하기' handleBack={handleBack} />
       {isLoading ? (
-        <div>Loading...</div>
+        <Loading />
       ) : (
         <Section>
           <form

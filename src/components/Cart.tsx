@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import CartHeader from './layout/CartHeader';
+import Loading from './layout/Loading';
 import { Button, HalfButton } from './layout/Button';
 import InputNumber from './layout/InputNumber';
 import NoList from './layout/NoList';
@@ -133,7 +134,7 @@ const Cart = (props: CartProps) => {
           <SubTitle>시술</SubTitle>
           <ul>
             {isLoading ? (
-              <div>Loading...</div>
+              <Loading />
             ) : Object.keys(cartItems).length ? (
               itemList
             ) : (
