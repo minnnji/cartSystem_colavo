@@ -14,10 +14,12 @@ interface DiscountTargetProps {
   children: JSX.Element[];
   discountKey: string;
   discountName: string;
+  discountRate: number;
   cartItems: { [key: string]: Item };
   targetItems: { [key: string]: Item };
   submitTargetItems: (
     discountKey: string,
+    discountRate: number,
     targetItem: { [key: string]: Item }
   ) => void;
   handleModalOpen: (title: string, children: ReactElement) => void;
@@ -29,6 +31,7 @@ const DiscountTarget = (props: DiscountTargetProps) => {
     children,
     discountKey,
     discountName,
+    discountRate,
     cartItems,
     targetItems,
     submitTargetItems,
@@ -84,7 +87,7 @@ const DiscountTarget = (props: DiscountTargetProps) => {
                 purple
                 type='button'
                 onClick={() => {
-                  submitTargetItems(discountKey, targets);
+                  submitTargetItems(discountKey, discountRate, targets);
                   handleModalClose();
                 }}
               >

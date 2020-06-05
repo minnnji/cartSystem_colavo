@@ -38,6 +38,7 @@ interface CartProps {
   removeDiscount: (key: string) => void;
   submitTargetItems: (
     discountKey: string,
+    discountRate: number,
     targetItem: { [key: string]: Item }
   ) => void;
   handleModalOpen: (title: string, children: ReactElement) => void;
@@ -84,7 +85,9 @@ const Cart = (props: CartProps) => {
 
   const targetItemList = targetItems => {
     const items: Item[] = Object.values(targetItems);
-    return items.map((item: Item, i) => <Target key={i}>{item.name}</Target>);
+    return items.length
+      ? items.map((item: Item, i) => <Target key={i}>{item.name}</Target>)
+      : [<Target key={0}>적용할 시술을 선택해주세요.</Target>];
   };
 
   const discountList = Object.keys(cartDiscounts).map((key: string) => {
@@ -98,6 +101,7 @@ const Cart = (props: CartProps) => {
             children={targetItemList(targetItems)}
             discountKey={key}
             discountName={name}
+            discountRate={rate}
             cartItems={cartItems}
             targetItems={targetItems}
             submitTargetItems={submitTargetItems}

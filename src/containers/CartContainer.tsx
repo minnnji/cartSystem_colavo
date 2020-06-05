@@ -33,6 +33,8 @@ interface CartContainerProps {
   history: RouteComponentProps;
 }
 
+const reducer = (acc, cur) => acc + cur;
+
 const CartContainer = (props: CartContainerProps) => {
   const { history } = props;
   const schedule = {
@@ -111,27 +113,27 @@ const CartContainer = (props: CartContainerProps) => {
     if (cartDiscountIdList.length) getDiscount();
   }, []);
 
-  // useEffect(() => {
-  //   const handleTotalCost = () => {
-  //     let totalPrice,
-  //       totalDiscountCost = 0;
-  //     if (seletedItemList.length) {
-  //       const costList = seletedItemList.map(
-  //         item => item[1].price * item[1].count
-  //       );
-  //       totalPrice = costList.reduce((acc, cur) => acc + cur);
+  useEffect(() => {
+    const handleTotalCost = () => {
+      let totalPrice,
+        totalDiscountCost = 0;
+      if (Object.values(cartItems).length) {
+        const itemList: Item[] = Object.values(cartItems);
+        const costList = itemList.map((item: Item) => item.price * item.count);
+        totalPrice = costList.reduce(reducer, 0);
 
-  //       if (selectedDiscountList.length) {
-  //         const discountCostList = selectedDiscountList.map(
-  //           discount => discount[1].discountCost
-  //         );
-  //         totalDiscountCost = discountCostList.reduce((acc, cur) => acc + cur);
-  //       }
-  //       setTotalCost(totalPrice - totalDiscountCost);
-  //     }
-  //   };
-  //   handleTotalCost();
-  // });
+        if (Object.values(cartDiscounts).length) {
+          const discountList: Discount[] = Object.values(cartDiscounts);
+          const discountCostList = discountList.map(
+            (discount: Discount) => discount.costForDiscount
+          );
+          totalDiscountCost = discountCostList.reduce(reducer, 0);
+        }
+        setTotalCost(totalPrice - totalDiscountCost);
+      }
+    };
+    handleTotalCost();
+  });
 
   const handleItemCount = (key: string, count: number) => {
     const updateItemInfo = { ...cartItems[key], count };
@@ -161,11 +163,30 @@ const CartContainer = (props: CartContainerProps) => {
     setCartDiscounts(newDiscounts);
   };
 
-  const submitTargetItems = (discountKey, targetItems) => {
+  const submitTargetItems = (
+    discountKey: string,
+    discountRate: number,
+    targetItems: { [key: string]: Item }
+  ) => {
+    const itemList = Object.values(targetItems);
+    const costList = itemList.map((item: Item) => item.price * item.count);
+    const totalCost = costList.reduce(reducer, 0);
+
     const newDiscounts = { ...cartDiscounts };
-    const newDiscountInfo = { ...newDiscounts[discountKey], targetItems };
+    const newDiscountInfo = {
+      ...newDiscounts[discountKey],
+      targetItems,
+      costForDiscount: totalCost * discountRate
+    };
     newDiscounts[discountKey] = newDiscountInfo;
     setCartDiscounts(newDiscounts);
+
+    const newDiscountIds = { ...cartDiscountIds };
+    newDiscountIds[discountKey] = {
+      targetItems,
+      costForDiscount: totalCost * discountRate
+    };
+    setCartDiscountIds(newDiscountIds);
   };
 
   const handleModalOpen = (title: string, children: ReactElement) => {
