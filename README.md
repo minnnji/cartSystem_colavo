@@ -1,6 +1,5 @@
 # Cart System
-
-[최민지](https://www.about-minji.com/) - 콜라보그라운드 과제(2020.05.30. ~ 2020.06.02.)
+개발기간 (2020.05.30. ~ 2020.06.02.)
 
 ![colavo_preview](./colavo_preview.gif)
 
@@ -19,8 +18,8 @@
 ## Run
 
 ```
-$ git clone https://github.com/minnnji/cartSystem_colavo
-$ cd cartSystem_colavo
+$ git clone https://github.com/minnnji/cartSystem_typeScript
+$ cd cartSystem_typeScript
 $ npm install
 $ npm start
 ```
